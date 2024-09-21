@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iet_control/app_theme/app_dart_theme.dart';
+import 'package:iet_control/app_theme/app_light_theme.dart';
+import 'package:iet_control/auth/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,9 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: AppDarkTheme.darkTheme, // Apply light theme here
+      theme: AppLightTheme.lightTheme, // Apply light theme here
       darkTheme: AppDarkTheme.darkTheme, // Optionally add a dark theme
-      home: const MyHomePage(),
+      // home: const MyHomePage(),
+      home: const LoginPage(),
     );
   }
 }
