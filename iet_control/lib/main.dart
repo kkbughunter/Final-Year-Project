@@ -1,44 +1,40 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:iet_control/app_theme/app_dart_theme.dart';
-import 'package:iet_control/app_theme/app_light_theme.dart';
-import 'package:iet_control/auth/login_page.dart';
+import 'package:iet_control/auth/phone_number_page.dart';
+import 'package:iet_control/home_page.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: AppLightTheme.lightTheme, // Apply light theme here
-      darkTheme: AppDarkTheme.darkTheme, // Optionally add a dark theme
-      // home: const MyHomePage(),
-      home: const LoginPage(),
+      title: 'IET Control',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: AuthGate(),
+      routes: {
+        '/home': (context) =>
+            HomePage(uid: FirebaseAuth.instance.currentUser?.uid ?? ''),
+        '/login': (context) => const PhoneNumberPage(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class AuthGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue[900],
-        title: const Text("IET Control"),
-      ),
-      body: const Center(
-        child: Text("IET Control"),
-      ),
-    );
+    // Check if the user is already logged in
+    User? user = FirebaseAuth.instance.currentUser;
+
+    // If the user is logged in, navigate to HomePage; otherwise, navigate to PhoneNumberPage
+    return user != null ? HomePage(uid: user.uid) : const PhoneNumberPage();
   }
 }
