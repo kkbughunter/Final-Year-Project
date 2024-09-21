@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1087983268409",
+    "project_id": "final-year-project-400d2",
+    "storage_bucket": "final-year-project-400d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087983268409:android:0e50bf494c90482380d3e8",
+        "android_client_info": {
+          "package_name": "com.example.iet_control"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3usuxJqpEtKSl6i8eRmYAFip_fR-T_No"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1087983268409:android:8f5ae6c85c11b11d80d3e8",
+        "android_client_info": {
+          "package_name": "com.iet.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3usuxJqpEtKSl6i8eRmYAFip_fR-T_No"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
