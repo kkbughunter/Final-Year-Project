@@ -5,7 +5,7 @@ import 'package:iet_control/auth/phone_number_page.dart';
 class HomePage extends StatelessWidget {
   final String uid;
 
-  const HomePage({Key? key, required this.uid}) : super(key: key);
+  const HomePage({super.key, required this.uid});
 
   @override
   Widget build(BuildContext context) {

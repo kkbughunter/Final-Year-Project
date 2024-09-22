@@ -7,10 +7,12 @@ import 'package:iet_control/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: AuthGate(),
+      home: const AuthGate(),
       routes: {
         '/home': (context) =>
             HomePage(uid: FirebaseAuth.instance.currentUser?.uid ?? ''),
@@ -29,6 +31,8 @@ class MyApp extends StatelessWidget {
 }
 
 class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Check if the user is already logged in
