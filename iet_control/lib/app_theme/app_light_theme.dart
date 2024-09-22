@@ -5,11 +5,10 @@ class AppLightTheme {
     primaryColor: Colors.blue[900],
     colorScheme: ColorScheme.fromSwatch().copyWith(
       primary: Colors.blue[900],
-      secondary: Colors.redAccent, // Secondary color
-      background: Colors.grey[200], // Background color
+      secondary: Colors.redAccent, // Background color
       surface: Colors.white, // Surface color (used in cards, etc.)
     ),
-    textTheme:  TextTheme(
+    textTheme:  const TextTheme(
       displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
       bodyLarge: TextStyle(fontSize: 16),
     ),
@@ -18,7 +17,7 @@ class AppLightTheme {
         backgroundColor: Colors.blue[900],
       ),
     ),
-    appBarTheme:  AppBarTheme(
+    appBarTheme:  const AppBarTheme(
       backgroundColor: Colors.blueAccent,
       titleTextStyle: TextStyle(
         fontSize: 20,
@@ -26,7 +25,7 @@ class AppLightTheme {
         color: Colors.white,
       ),
     ),
-    floatingActionButtonTheme:  FloatingActionButtonThemeData(
+    floatingActionButtonTheme:  const FloatingActionButtonThemeData(
       backgroundColor: Colors.blue,
     ),
   );

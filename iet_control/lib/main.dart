@@ -1,9 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:iet_control/app_theme/app_dart_theme.dart';
+import 'package:iet_control/firebase_options.dart';
+import 'package:iet_control/home_page/home_page_repo.dart';
+import 'home_page/home_page.dart';
 
-void main() {
-  runApp(const MyApp());
+
+void main() async{
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp();
+    runApp(const MyApp());
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -14,7 +22,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppDarkTheme.darkTheme, // Apply light theme here
       darkTheme: AppDarkTheme.darkTheme, // Optionally add a dark theme
-      home: const MyHomePage(),
+      home: const HomePage(userId: "L7MRratFVuTSn4gCsvJ6gic0ZXS2"),
+      // home: const MyHomePage(),
     );
   }
 }
