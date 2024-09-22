@@ -2,14 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:iet_control/auth/phone_number_page.dart';
-import 'package:iet_control/home_page.dart';
+import 'package:iet_control/home_page/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
       home: const AuthGate(),
       routes: {
         '/home': (context) =>
-            HomePage(uid: FirebaseAuth.instance.currentUser?.uid ?? ''),
+            HomePage(userId: FirebaseAuth.instance.currentUser?.uid ?? ''),
         '/login': (context) => const PhoneNumberPage(),
       },
     );
@@ -40,6 +39,6 @@ class AuthGate extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
 
     // If the user is logged in, navigate to HomePage; otherwise, navigate to PhoneNumberPage
-    return user != null ? HomePage(uid: user.uid) : const PhoneNumberPage();
+    return user != null ? HomePage(userId: user.uid) : const PhoneNumberPage();
   }
 }
