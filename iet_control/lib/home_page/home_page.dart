@@ -69,7 +69,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           switchStates[index] = newValue;
           String key = fetchedData['deviceDetails'].keys.elementAt(index);
-          print("Key" + key);
+          print("Key$key");
           _homePageRepo.updateStatus(key, newValue); // Update the status
         });
       },

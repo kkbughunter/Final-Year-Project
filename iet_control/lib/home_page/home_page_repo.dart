@@ -12,27 +12,28 @@ class HomePageRepo {
         Map<dynamic, dynamic> userData =
             event.snapshot.value as Map<dynamic, dynamic>;
         List<dynamic> deviceList = [];
-        print(userData['deviceDetails']);
+        
         if (userData['deviceDetails'] == null) {
           userData['deviceDetails'] = {};
           onDataUpdated(userData);
           return;
         }
+        
+        // Handle both Map and List cases for deviceDetails
         if (userData['deviceDetails'] is Map) {
           deviceList = (userData['deviceDetails'] as Map)
               .values
               .where((device) => device != null)
               .toList();
-        }
-        if(userData['deviceDetails'] is List)
-        {
-          deviceList =userData['deviceDetails'] 
+        } else if (userData['deviceDetails'] is List) {
+          deviceList = userData['deviceDetails']
               .where((device) => device != null)
               .toList();
         }
+
         if (userData.containsKey('deviceDetails') && deviceList.isNotEmpty) {
           print('Fetched Data 2: $userData');
-          print("Dvice $deviceList");
+          print("Devices: $deviceList");
 
           // Initialize an empty map for deviceDetails
           Map<String, dynamic> deviceDetails = {};
@@ -40,11 +41,12 @@ class HomePageRepo {
           // Notify UI that data is being fetched (for displaying loading indicators)
           userData['deviceDetails'] = deviceDetails;
           onDataUpdated(userData); // Update UI with an empty device list
-          // Fetch each device data asynchronously
+
+          // Set up an active listener for each device in the list
           for (var deviceId in deviceList) {
             if (deviceId != null) {
-              // Fetch device data and update UI incrementally
-              _dbDev.child(deviceId).once().then((DatabaseEvent deviceEvent) {
+              // Actively listen to changes in each device
+              _dbDev.child(deviceId).onValue.listen((DatabaseEvent deviceEvent) {
                 if (deviceEvent.snapshot.value != null) {
                   var deviceData =
                       deviceEvent.snapshot.value as Map<dynamic, dynamic>;
@@ -64,8 +66,8 @@ class HomePageRepo {
                   onDataUpdated(
                       userData); // Update UI each time a device is fetched
                 }
-              }).catchError((error) {
-                print("Error fetching device $deviceId: $error");
+              }).onError((error) {
+                print("Error listening to device $deviceId: $error");
               });
             }
           }
