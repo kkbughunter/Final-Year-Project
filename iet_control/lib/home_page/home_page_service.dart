@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:iet_control/home_page/home_tools.dart';
+import 'home_tools.dart'; // Import the HomeTools class
 
 class HomePageService extends StatelessWidget {
   final Map<dynamic, dynamic> fetchedData;
@@ -15,29 +17,29 @@ class HomePageService extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text("IET Control"),
-      ),
-      backgroundColor: Colors.white,
+      // backgroundColor: Colors.white,
       body: fetchedData.isEmpty || fetchedData['deviceDetails'] == null
-          ? Center(child: CircularProgressIndicator()) // Show loading state initially
+          ? Center(
+              child:
+                  CircularProgressIndicator()) // Show loading state initially
           : fetchedData['deviceDetails'].isEmpty
-              ? Center (child: Column(
+              ? Center(
+                  child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/no_devices_1.jpg', width: 200, height: 200), // Replace with your image
-                      SizedBox(height: 20),
-                      Text(
+                      Image.asset('assets/images/no_devices_1.jpg',
+                          width: 200, height: 200), // Replace with your image
+                      const SizedBox(height: 20),
+                      const Text(
                         ":( \nSORRY! \nNo devices available ",
                         style: TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                     ],
                   ),
-                )// Show "No devices available" when empty
+                ) // Show "No devices available" when empty
               : GridView.builder(
-                  padding: EdgeInsets.all(16.0),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  padding: const EdgeInsets.all(16.0),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
@@ -45,60 +47,20 @@ class HomePageService extends StatelessWidget {
                   ),
                   itemCount: fetchedData['deviceDetails'].length,
                   itemBuilder: (context, index) {
-                    String key = fetchedData['deviceDetails'].keys.elementAt(index);
-                    String type = fetchedData['deviceDetails'][key]?['type'] ?? 'Unknown Device';
+                    String key =
+                        fetchedData['deviceDetails'].keys.elementAt(index);
+                    String type = fetchedData['deviceDetails'][key]?['type'] ??
+                        'Unknown Device';
                     bool isOn = switchStates[index];
 
-                    return buildCard(
+                    // Use HomeTools to build the card
+                    return HomeTools.buildSquareDeviceCard(
                       title: type,
                       isOn: isOn,
                       onChange: (newValue) => onSwitchToggle(index, newValue),
                     );
                   },
                 ),
-    );
-  }
-
-  // Function to build each card for a device
-  Widget buildCard({
-    required bool isOn,
-    required ValueChanged<bool> onChange,
-    required String title,
-  }) {
-    return Container(
-      height: 215,
-      width: 150,
-      child: Card(
-        color: isOn ? const Color.fromARGB(224, 223, 202, 21) : Colors.grey,
-        elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(title),
-              SizedBox(height: 10),
-              Switch(
-                value: isOn,
-                onChanged: onChange,
-                activeColor: Colors.yellow[600],
-                activeTrackColor: Colors.yellow[300],
-                inactiveThumbColor: Colors.grey[600],
-                inactiveTrackColor: Colors.grey[300],
-              ),
-              Text(isOn ? "ON" : "OFF"),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  print("Clicked More!");
-                },
-                child: Text("More"),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }
