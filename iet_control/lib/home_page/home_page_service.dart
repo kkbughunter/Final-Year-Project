@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:wifi_scan/wifi_scan.dart';
+import 'dart:async';
+import 'package:wifi_iot/wifi_iot.dart';
 
 class HomePageService extends StatelessWidget {
   final Map<dynamic, dynamic> fetchedData;
@@ -126,27 +129,138 @@ class HomePageService extends StatelessWidget {
   }
 }
 
-
-
 class AddDevicePage extends StatefulWidget {
   @override
   _AddDevicePageState createState() => _AddDevicePageState();
 }
 
 class _AddDevicePageState extends State<AddDevicePage> {
-  // Available networks with their signal strengths
-  List<Map<String, dynamic>> availableNetworks = [
-    {'ssid': 'Home Network', 'signal': -100, 'security': 'WPA2'},
-    {'ssid': 'Coffee Shop WiFi', 'signal': -70, 'security': 'Open'},
-    {'ssid': 'Office Network', 'signal': -60, 'security': 'WPA3'},
-    {'ssid': 'Public WiFi', 'signal': -80, 'security': 'Open'}
-  ];
+  List<WiFiAccessPoint> availableNetworks = [];
+  Timer? scanTimer;
 
-  // Method to simulate scanning for networks
-  void scanForNetworks() {
-    setState(() {
-      // Simulate a network scan and update availableNetworks
+  @override
+  void initState() {
+    super.initState();
+    startRealTimeScanning(); // Start periodic scanning
+  }
+
+  @override
+  void dispose() {
+    stopRealTimeScanning(); // Stop scanning when the widget is disposed
+    super.dispose();
+  }
+
+  // Function to start periodic scanning
+  void startRealTimeScanning() {
+    scanForNetworks();
+    scanTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+      scanForNetworks();
     });
+  }
+
+  // Function to stop the timer
+  void stopRealTimeScanning() {
+    if (scanTimer != null) {
+      scanTimer!.cancel();
+    }
+  }
+
+  // Function to scan for networks and update the list
+  void scanForNetworks() async {
+    await WiFiScan.instance.startScan();
+    final List<WiFiAccessPoint>? networks = await WiFiScan.instance.getScannedResults();
+
+    setState(() {
+      availableNetworks = networks?.where((network) => network.ssid.startsWith('IET')).toList() ?? [];
+      if (availableNetworks.isNotEmpty) {
+        for (var network in availableNetworks) {
+          print(
+              'Network detected: ${network.ssid}, Signal Strength: ${network.level} dBm');
+        }
+      } else {
+        print('No networks detected');
+      }
+    });
+  }
+
+  // Function to show the dialog asking for the Wi-Fi password
+  void showPasswordDialog(WiFiAccessPoint network) {
+    String password = '';
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Enter password for ${network.ssid}"),
+          content: TextField(
+            obscureText: true,
+            onChanged: (value) {
+              password = value;
+            },
+            decoration: const InputDecoration(
+              hintText: "Password",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                connectToWiFi(
+                    network.ssid, password); // Connect using the password
+              },
+              child: const Text("Connect"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void connectToWiFi(String ssid, String password) async {
+    try {
+      print('Attempting to connect to network: $ssid');
+
+      // Check if Wi-Fi is enabled
+      var wifiEnabled =
+          await WiFiForIoTPlugin.isEnabled(); // Check if Wi-Fi is enabled
+      if (!wifiEnabled) {
+        print('Wi-Fi is disabled');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Wi-Fi is disabled. Please enable it to connect.")),
+        );
+        return;
+      }
+
+      // Try connecting to the Wi-Fi network
+      bool success = await WiFiForIoTPlugin.connect(
+        ssid,
+        password: password,
+        security:
+            NetworkSecurity.WPA, // Use WPA or adjust security type accordingly
+        joinOnce: true, // Only join once without saving it to the device
+      );
+
+      if (success) {
+        print('Successfully connected to $ssid');
+      } else {
+        print('Failed to connect to $ssid');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to connect to $ssid")),
+        );
+      }
+    } catch (e) {
+      print('Error while trying to connect: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
   }
 
   @override
@@ -163,23 +277,19 @@ class _AddDevicePageState extends State<AddDevicePage> {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                // Background signal circles
                 buildSignalCircle(radius: 150, color: Colors.red.shade100),
                 buildSignalCircle(radius: 250, color: Colors.orange.shade100),
                 buildSignalCircle(radius: 350, color: Colors.green.shade100),
-                
-                // Place devices on the circles based on signal strength
                 ...availableNetworks.map((network) {
                   return Positioned(
-                    left: getPosition(network['signal'], 350).dx,
-                    top: getPosition(network['signal'], 350).dy,
+                    left: getPosition(network.level ?? -100, 350).dx,
+                    top: getPosition(network.level ?? -100, 350).dy,
                     child: buildDeviceIcon(network),
                   );
                 }).toList(),
               ],
             ),
           ),
-          // Device list with connection buttons
           Expanded(
             child: ListView.builder(
               itemCount: availableNetworks.length,
@@ -188,25 +298,25 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 return ListTile(
                   leading: Icon(
                     Icons.wifi,
-                    color: getSignalColor(network['signal']),
+                    color: getSignalColor(network.level ?? -100),
                   ),
                   title: Text(
-                    network['ssid'],
+                    network.ssid,
                     style: TextStyle(color: const Color(0xFF4D4D4D)),
                   ),
                   subtitle: Text(
-                    'Signal: ${network['signal']} dBm, Security: ${network['security']}',
-                    style: TextStyle(color: const Color(0xFF4D4D4D)),
+                    'Signal: ${network.level} dBm',
                   ),
                   trailing: ElevatedButton(
                     onPressed: () {
-                      // Connect action
+                      showPasswordDialog(
+                          network); // Show the password dialog when "Connect" is pressed
                     },
                     child: const Text('Connect'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF27AE60),
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24.0, vertical: 12.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -252,25 +362,24 @@ class _AddDevicePageState extends State<AddDevicePage> {
 
   // Function to get position based on signal strength
   Offset getPosition(int signalStrength, double maxRadius) {
-    double angle = (signalStrength + 100) * pi / 50; // Convert signal to angle
-    double distance = (100 + signalStrength) * (maxRadius / 100); // Distance based on signal
-
+    double angle = (signalStrength + 100) * pi / 50;
+    double distance = (100 + signalStrength) * (maxRadius / 100);
     double dx = maxRadius / 2 + cos(angle) * distance;
     double dy = maxRadius / 2 + sin(angle) * distance;
     return Offset(dx, dy);
   }
 
   // Widget to build device icon
-  Widget buildDeviceIcon(Map<String, dynamic> network) {
+  Widget buildDeviceIcon(WiFiAccessPoint network) {
     return Column(
       children: [
         Icon(
           Icons.wifi,
           size: 30,
-          color: getSignalColor(network['signal']),
+          color: getSignalColor(network.level),
         ),
         Text(
-          network['ssid'],
+          network.ssid,
           style: TextStyle(
             fontSize: 12,
             color: Colors.black,
@@ -280,5 +389,3 @@ class _AddDevicePageState extends State<AddDevicePage> {
     );
   }
 }
-
-
