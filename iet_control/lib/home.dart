@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dot_curved_bottom_nav/dot_curved_bottom_nav.dart';
 import 'package:iet_control/home_page/home_page.dart';
+import 'package:iet_control/profile/profile_page.dart';
 
 class Home extends StatefulWidget {
   final String userId;
@@ -20,34 +21,30 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     _pages = [
-      HomePage(userId: widget.userId), // Use widget.userId to pass the userId
-      const Center(child: Text('Automate')),
-      const Center(child: Text('Store')),
-      const Center(child: Text('Profile')),
+      HomePage(userId: widget.userId),
+      Center(
+        child: Image.asset(
+          'assets/images/comming_soon.png',
+          width: 300,
+          height: 300,
+          fit: BoxFit.cover,
+        ),
+      ),
+      Center(
+        child: Image.asset(
+          'assets/images/comming_soon.png',
+          width: 400,
+          height: 400,
+          fit: BoxFit.cover,
+        ),
+      ),
+      ProfilePage(),
     ];
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: CircleAvatar(
-            backgroundImage: NetworkImage(
-              'https://avatars.githubusercontent.com/u/91019132?v=4',
-            ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              // Action when the add button is pressed
-            },
-          ),
-        ],
-      ),
       body: _pages[_currentPage],
       bottomNavigationBar: DotCurvedBottomNav(
         selectedIndex: _currentPage,
