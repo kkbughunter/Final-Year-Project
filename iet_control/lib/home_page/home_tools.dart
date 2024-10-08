@@ -5,57 +5,84 @@ class HomeTools {
     required bool isOn,
     required ValueChanged<bool> onChange,
     required String title,
+    required String type,
   }) {
     return Container(
-      height: 100,
-      width: 100,
+      // height: 50, // Adjusted for a more spacious layout
+      // width: 40, // Slightly wider for accommodating elements
       child: Card(
         color: isOn ? Colors.yellow[200] : Colors.grey[300],
         elevation: 5,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(12.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment:
+                CrossAxisAlignment.start, // Align elements to the left
             children: [
-              // Large Light icon in the center
-
-              // const Spacer(),
-
-              // Title text
-              Text(
-                title,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              // const Spacer(),
-              SizedBox(
-                height: 50,
-                width: 50,
-                child: Icon(
-                  Icons.lightbulb,
-                  color: isOn ? Colors.amber : Colors.grey,
-                  size: 50, // Larger icon size
-                ),
-              ),
-              // Toggle switch
-              Switch(
-                value: isOn,
-                onChanged: onChange,
-                activeColor: Colors.red,
-                inactiveThumbColor: Colors.grey,
+              // Top Row (Light Icon and Wifi Icon)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(
+                    Icons.light,
+                    size: 24,
+                    color: isOn ? Colors.amber : Colors.grey,
+                  ),
+                  Icon(
+                    Icons.wifi,
+                    size: 24,
+                    color: isOn ? Colors.blue : Colors.grey,
+                  ),
+                ],
               ),
 
-              const SizedBox(height: 10),
+              // const SizedBox(height: 12),
+              Spacer(),
 
-              // More button at the bottom
-              TextButton(
-                onPressed: () {
-                  print("More clicked");
-                },
+              // Title text (Name)
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
                 child: Text(
-                  "More",
-                  style: TextStyle(color: isOn ? Colors.blue : Colors.grey),
+                  title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
+              ),
+
+              // Subtitle text (Type)
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  type,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ),
+
+              Spacer(), // Pushes the bottom part down
+
+              // Bottom Row (Status Text and Toggle Switch)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Status Text
+                  Text(
+                    isOn ? "On" : "Off",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: isOn ? Colors.green : Colors.red,
+                    ),
+                  ),
+
+                  // Toggle switch
+                  Switch(
+                    value: isOn,
+                    onChanged: onChange,
+                    activeColor: Colors.green,
+                    inactiveThumbColor: Colors.grey,
+                  ),
+                ],
               ),
             ],
           ),
@@ -68,7 +95,7 @@ class HomeTools {
     required double currentValue,
     required ValueChanged<double> onChange,
     required String title,
-    // required String subtitle,
+    required String subtitle,
   }) {
     return Container(
       height: 130,

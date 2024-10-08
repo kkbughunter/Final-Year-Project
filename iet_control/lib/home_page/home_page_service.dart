@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iet_control/home_page/home_tools.dart';
-import 'home_tools.dart'; // Import the HomeTools class
 
 class HomePageService extends StatelessWidget {
   final Map<dynamic, dynamic> fetchedData;
@@ -41,24 +40,39 @@ class HomePageService extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.7,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.85,
                   ),
                   itemCount: fetchedData['deviceDetails'].length,
                   itemBuilder: (context, index) {
                     String key =
                         fetchedData['deviceDetails'].keys.elementAt(index);
+                    String name = fetchedData['deviceDetails'][key]?['name'] ??
+                        'Unknown Device';
                     String type = fetchedData['deviceDetails'][key]?['type'] ??
                         'Unknown Device';
                     bool isOn = switchStates[index];
 
-                    // Use HomeTools to build the card
-                    return HomeTools.buildSquareDeviceCard(
-                      title: type,
-                      isOn: isOn,
-                      onChange: (newValue) => onSwitchToggle(index, newValue),
-                    );
+                    if (type == "light") { // type = light
+                      return HomeTools.buildSquareDeviceCard(
+                        title: name,
+                        type: type, // added
+                        isOn: isOn,
+                        onChange: (newValue) => onSwitchToggle(index, newValue),
+                      );
+                    } else { // type = fan   --> Problem in Displaying 
+                      // return HomeTools.buildRectangularDeviceCard(
+                      //   title: "Living Room Light", // Title text for the card
+                      //   subtitle: "Smart Light", // Subtitle text for the card
+                      //   currentValue: 5, // Initial slider value
+                      //   onChange: (newValue) {
+                      //     // Callback when slider value changes
+                      //     print("New Value: $newValue");
+                      //     // Handle your logic here
+                      //   },
+                      // );
+                    }
                   },
                 ),
     );
